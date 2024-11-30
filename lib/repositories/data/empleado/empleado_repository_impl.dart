@@ -24,7 +24,7 @@ class EmpleadoRepositoryImpl implements EmpleadoRepository {
   @override
   Future<EmpleadoModel> addEmpleado(EmpleadoModel empleado) async {
     final response =
-        await apiClient.post(ApiEndpoints.empleados, empleado.toJson());
+        await apiClient.post(ApiEndpoints.registroEmpleado, empleado.toJson());
 
     if (response.statusCode == 201) {
       return EmpleadoModel.fromJson(response.data);

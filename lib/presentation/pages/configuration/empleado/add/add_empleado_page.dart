@@ -135,6 +135,7 @@ class _AddEmpleadoPageState extends State<AddEmpleadoPage> {
                 backgroundColor: Colors.green,
               ),
             );
+            context.read<EmpleadoBloc>().add(FetchEmpleadosEvent());
             Navigator.of(context).pop();
           } else if (state is EmpleadoFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
