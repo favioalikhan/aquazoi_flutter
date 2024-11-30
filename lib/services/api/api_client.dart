@@ -66,6 +66,26 @@ class ApiClient {
     }
   }
 
+  // Método PATCH para actualización parcial
+  Future<Response> patch(String endpoint, Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.patch(
+        endpoint,
+        data: jsonEncode(data),
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+      return response;
+    } on DioException catch (e) {
+      print("Error: ${e.message}");
+      if (e.response != null) {
+        print("Response data: ${e.response?.data}");
+        print("Response code: ${e.response?.statusCode}");
+      }
+      throw Exception(
+          e.response?.data['detail'] ?? 'Error en la solicitud: ${e.message}');
+    }
+  }
+
   Future<Response> delete(String endpoint) async {
     try {
       final response = await _dio.delete(
