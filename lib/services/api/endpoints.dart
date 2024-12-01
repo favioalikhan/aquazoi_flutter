@@ -8,4 +8,6 @@ class ApiEndpoints {
       '/departamentos/'; // Lista de departamentos
   static String rolesPorDepartamento(int departamentoId) =>
       '/departamentos/$departamentoId/roles/';
+  static const String inventario = '/inventarios/'; //Lista del inventario
+  static const String producto = '/productos/'; //Lista del inventario
 }
