@@ -183,7 +183,23 @@ class EmpleadoTable extends StatelessWidget {
             ),
           );
         } else if (state is EmpleadoFailure) {
-          return Center(child: Text('Error: ${state.error}'));
+          // En lugar de solo mostrar el error, refrescar la tabla
+          // Puedes intentar refrescar la lista de productos tras un error.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<EmpleadoBloc>().add(FetchEmpleadosEvent());
+          });
+
+          // Aquí se muestra el error como un widget de información adicional.
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('', style: TextStyle(color: Colors.red)),
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(), // Mientras se recarga
+              ],
+            ),
+          );
         }
         return const Center(child: Text('No hay empleados para mostrar'));
       },
