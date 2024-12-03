@@ -9,6 +9,8 @@ import '../../../../../models/data_model/rol_model.dart';
 import '../../../../../repositories/data/departamento/departamento_repository.dart';
 import '../../../../../repositories/data/rol/rol_repository.dart';
 import '../../../../bloc/empleado/empleado_bloc.dart';
+import '../../../../bloc/empleado/empleado_event.dart';
+import '../../../../bloc/empleado/empleado_state.dart';
 import '../../../../widgets/form_widgets.dart';
 
 class AddEmpleadoPage extends StatefulWidget {
@@ -65,9 +67,7 @@ class _AddEmpleadoPageState extends State<AddEmpleadoPage> {
   void _cargarRoles(int departamentoId) async {
     try {
       final rolRepository = context.read<RolRepository>();
-      final roles = await rolRepository.getRoles(
-        RolModel(departamentoId: departamentoId),
-      );
+      final roles = await rolRepository.getRoles(departamentoId);
       setState(() {
         _rolesDisponibles = roles;
         _rolSeleccionado = null;
@@ -107,8 +107,8 @@ class _AddEmpleadoPageState extends State<AddEmpleadoPage> {
             DateTime.now(), // Optional field
         puesto: _puestoController.text,
         estado: _estadoController.text,
-        departamentoPrincipal: _departamentoSeleccionado,
-        rolPrincipal: _rolSeleccionado,
+        // departamentoPrincipal: _departamentoSeleccionado,
+        //rolPrincipal: _rolSeleccionado,
         accesoSistema: _accesoSistema,
       );
 
@@ -127,15 +127,17 @@ class _AddEmpleadoPageState extends State<AddEmpleadoPage> {
       ),
       body: BlocListener<EmpleadoBloc, EmpleadoState>(
         listener: (context, state) {
-          if (state is EmpleadoOperationSuccess) {
+          if (state is EmpleadosLoadedState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                    'Empleado ${state.empleado.nombre} registrado exitosamente'),
+                content:
+                    Text('Empleado ${state.empleados} registrado exitosamente'),
                 backgroundColor: Colors.green,
               ),
             );
-            context.read<EmpleadoBloc>().add(FetchEmpleadosEvent());
+            context
+                .read<EmpleadoBloc>()
+                .add(FetchEmpleadosEvent()); //Recargar la lista
             Navigator.of(context).pop();
           } else if (state is EmpleadoFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -326,7 +328,7 @@ class _AddEmpleadoPageState extends State<AddEmpleadoPage> {
                       value: dept
                           .id, // El value es el id, pero mostramos el nombre
                       child: Text(
-                          dept.nombre), // El nombre se muestra en el dropdown
+                          dept.nombre!), // El nombre se muestra en el dropdown
                     );
                   }).toList(),
                   onChanged: (int? id) {

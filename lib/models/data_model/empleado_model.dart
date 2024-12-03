@@ -1,25 +1,24 @@
 import 'package:intl/intl.dart';
 
 import '../entity/empleado.dart';
-import 'departamento_model.dart';
-import 'rol_model.dart';
 
 class EmpleadoModel extends Empleado {
   EmpleadoModel({
-    required super.email,
-    required super.nombre,
-    required super.apellidoPaterno,
-    required super.apellidoMaterno,
+    super.id,
+    super.email,
+    super.nombre,
+    super.apellidoPaterno,
+    super.apellidoMaterno,
     required super.dni,
     super.telefono,
     super.direccion,
-    required super.fechaContratacion,
-    required super.fechaIngreso,
-    required super.fechaBaja,
+    super.fechaContratacion,
+    super.fechaIngreso,
+    super.fechaBaja,
     required super.puesto,
-    required super.estado,
-    required super.departamentoPrincipal,
-    required super.rolPrincipal,
+    super.estado,
+    super.departamentoPrincipal,
+    super.rolPrincipal,
     super.roles,
     required super.accesoSistema,
   });
@@ -27,33 +26,39 @@ class EmpleadoModel extends Empleado {
   // Convertir desde JSON
   factory EmpleadoModel.fromJson(Map<String, dynamic> json) {
     return EmpleadoModel(
-      email: json['email'],
-      nombre: json['nombre'],
-      apellidoPaterno: json['apellido_paterno'],
-      apellidoMaterno: json['apellido_materno'],
-      dni: json['dni'],
-      telefono: json['telefono'],
-      direccion: json['direccion'],
-      fechaContratacion:
-          DateFormat('yyyy-MM-dd').parseStrict(json['fecha_contratacion']),
-      fechaIngreso: DateFormat('yyyy-MM-dd').parseStrict(json['fecha_ingreso']),
-      fechaBaja: DateFormat('yyyy-MM-dd').parseStrict(json['fecha_baja']),
-      puesto: json['puesto'],
-      estado: json['estado'],
+      id: json['id'],
+      email: json['email'] as String?,
+      nombre: json['nombre'] as String?,
+      apellidoPaterno: json['apellido_paterno'] as String?,
+      apellidoMaterno: json['apellido_materno'] as String?,
+      dni: json['dni'] as String,
+      telefono: json['telefono'] as String?,
+      direccion: json['direccion'] as String?,
+      fechaContratacion: json['fecha_contratacion'] != null
+          ? DateTime.parse(json['fecha_contratacion'] as String)
+          : null,
+      fechaIngreso: json['fecha_ingreso'] != null
+          ? DateTime.parse(json['fecha_ingreso'] as String)
+          : null,
+      fechaBaja: json['fecha_baja'] != null
+          ? DateTime.parse(json['fecha_baja'] as String)
+          : null,
+      puesto: json['puesto'] as String,
+      estado: json['estado'] as String?,
       departamentoPrincipal: json['departamento_principal'] != null
-          ? DepartamentoModel.fromJson(json['departamento_principal'])
+          ? json['departamento_principal']['id'] as int
           : null,
+      accesoSistema: json['acceso_sistema'] as bool? ?? false,
       rolPrincipal: json['rol_principal'] != null
-          ? RolModel.fromJson(json['rol_principal'])
+          ? json['rol_principal']['id'] as int
           : null,
-      accesoSistema: json['acceso_sistema'],
-      roles: (json['roles'] as List)
-          .map((rolJson) => RolModel.fromJson(rolJson))
-          .toList(),
+      roles: json['roles'] != null
+          ? List<int>.from(
+              (json['roles'] as List).map((role) => role['id'] as int))
+          : null,
     );
   }
 
-  // Convertir a JSON
   Map<String, dynamic> toJson() {
     final dateFormat = DateFormat('yyyy-MM-dd');
     return {
@@ -64,18 +69,21 @@ class EmpleadoModel extends Empleado {
       'dni': dni,
       'telefono': telefono,
       'direccion': direccion,
-      'fecha_contratacion': dateFormat.format(
-          fechaContratacion), // Usamos la instancia para formatear la fecha
-      'fecha_ingreso': dateFormat
-          .format(fechaIngreso), // Usamos la instancia para formatear la fecha
-      'fecha_baja': dateFormat
-          .format(fechaBaja), // Usamos la instancia para formatear la fecha
+      'fecha_contratacion': fechaContratacion != null
+          ? dateFormat.format(fechaContratacion!)
+          : null, // Usamos la instancia para formatear la fecha
+      'fecha_ingreso': fechaIngreso != null
+          ? dateFormat.format(fechaIngreso!)
+          : null, // Usamos la instancia para formatear la fecha
+      'fecha_baja': fechaBaja != null
+          ? dateFormat.format(fechaBaja!)
+          : null, // Usamos la instancia para formatear la fecha
       'puesto': puesto,
       'estado': estado,
-      'departamento_principal': departamentoPrincipal?.id,
-      'rol_principal': rolPrincipal?.id,
+      'departamento_principal': departamentoPrincipal,
+      'rol_principal': rolPrincipal,
       'acceso_sistema': accesoSistema,
-      'roles': roles?.map((rol) => (rol as RolModel).toJson()).toList(),
+      'roles': roles,
     };
   }
 }
