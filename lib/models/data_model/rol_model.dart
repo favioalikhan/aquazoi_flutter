@@ -12,10 +12,10 @@ class RolModel extends Rol {
   // Convertir desde JSON a RolModel
   factory RolModel.fromJson(Map<String, dynamic> json) {
     return RolModel(
-      id: json['id'],
-      nombre: json['nombre'],
-      responsabilidades: json['responsabilidades'],
-      departamentoId: json['departamento_id'],
+      id: json['id'] as int,
+      nombre: json['nombre'] as String,
+      responsabilidades: json['responsabilidades'] as String,
+      departamentoId: json['departamento_id'] as int,
       requiereAccesoSistema: json['requiere_acceso_sistema'] ?? false,
     );
   }

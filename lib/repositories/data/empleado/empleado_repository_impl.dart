@@ -34,25 +34,29 @@ class EmpleadoRepositoryImpl implements EmpleadoRepository {
   }
 
   @override
-  Future<EmpleadoModel> updateEmpleado(EmpleadoModel empleado) async {
+  Future<EmpleadoModel> updateEmpleado(
+      int empleadoId, EmpleadoModel empleado) async {
+    final empleadoJson = empleado.toJson();
     final response = await apiClient.put(
-        '${ApiEndpoints.empleados}/${empleado.id}', empleado.toJson());
+      ApiEndpoints.updateEmpleado(empleadoId),
+      empleadoJson,
+    );
 
     if (response.statusCode == 200) {
       return EmpleadoModel.fromJson(response.data);
     } else {
-      throw Exception(
-          'Error al actualizar empleado: ${response.data['detail']}');
+      throw Exception('Error al actualizar empleado: ${response.statusCode}');
     }
   }
 
   @override
-  Future<EmpleadoModel> deleteEmpleado(EmpleadoModel empleado) async {
-    final response =
-        await apiClient.delete('${ApiEndpoints.empleados}/${empleado.id}');
+  Future<EmpleadoModel> deleteEmpleado(int empleadoId) async {
+    final response = await apiClient.delete(
+      ApiEndpoints.deleteEmpleado(empleadoId), // Usando el endpoint correcto
+    );
 
     if (response.statusCode == 200) {
-      return empleado;
+      return EmpleadoModel.fromJson(response.data);
     } else {
       throw Exception('Error al eliminar empleado: ${response.data['detail']}');
     }

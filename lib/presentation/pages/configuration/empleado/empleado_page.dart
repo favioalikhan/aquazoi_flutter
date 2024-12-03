@@ -9,7 +9,10 @@ import '../../../../repositories/data/rol/rol_repository_impl.dart';
 import '../../../../services/api/api_client.dart';
 import '../../../../usecases/empleado/empleado_usecase.dart';
 import '../../../bloc/empleado/empleado_bloc.dart';
+import '../../../bloc/empleado/empleado_event.dart';
+import '../../../bloc/empleado/empleado_state.dart';
 import 'add/add_empleado_page.dart';
+import 'update/update_empleado_page.dart';
 
 class EmpleadoPage extends StatelessWidget {
   const EmpleadoPage({super.key});
@@ -89,25 +92,18 @@ class EmpleadoTable extends StatelessWidget {
                         DataColumn(label: Text('DNI')),
                         DataColumn(label: Text('Teléfono')),
                         DataColumn(label: Text('Puesto')),
-                        DataColumn(label: Text('Departamento')),
-                        DataColumn(label: Text('Rol Principal')),
                         DataColumn(label: Text('Acceso Sistema')),
                         DataColumn(label: Text('Acciones')),
                       ],
                       rows: empleados.map((empleado) {
                         return DataRow(
                           cells: [
-                            DataCell(Text(empleado.nombre)),
-                            DataCell(Text(empleado.apellidoPaterno)),
+                            DataCell(Text(empleado.nombre!)),
+                            DataCell(Text(empleado.apellidoPaterno!)),
                             DataCell(Text(empleado.dni)),
                             DataCell(
                                 Text(empleado.telefono ?? 'No registrado')),
                             DataCell(Text(empleado.puesto)),
-                            DataCell(Text(
-                                empleado.departamentoPrincipal?.nombre ??
-                                    'Sin departamento')),
-                            DataCell(Text(empleado.rolPrincipal?.nombre ??
-                                'Sin rol principal')),
                             DataCell(
                               Icon(
                                 empleado.accesoSistema
@@ -123,8 +119,47 @@ class EmpleadoTable extends StatelessWidget {
                                 IconButton(
                                   icon: const Icon(Icons.edit,
                                       color: Colors.blue),
-                                  onPressed: () {
-                                    // Aquí puedes agregar lógica para editar
+                                  onPressed: () async {
+                                    final empleadoBloc =
+                                        context.read<EmpleadoBloc>();
+                                    // Navegar a la página para editar el empleado
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            MultiRepositoryProvider(
+                                          providers: [
+                                            RepositoryProvider<
+                                                DepartamentoRepository>(
+                                              create: (context) =>
+                                                  DepartamentoRepositoryImpl(
+                                                      ApiClient()),
+                                            ),
+                                            RepositoryProvider<RolRepository>(
+                                              create: (context) =>
+                                                  RolRepositoryImpl(
+                                                      ApiClient()),
+                                            ),
+                                          ],
+                                          child: BlocProvider.value(
+                                            value: empleadoBloc,
+                                            child: UpdateEmpleadoPage(
+                                                empleado: empleado),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                    // Opcional: Manejar el resultado de la página de edición
+                                    if (result != null &&
+                                        result is bool &&
+                                        result) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Empleado actualizado exitosamente')),
+                                      );
+                                    }
                                   },
                                 ),
                                 IconButton(
@@ -133,7 +168,7 @@ class EmpleadoTable extends StatelessWidget {
                                   onPressed: () {
                                     context
                                         .read<EmpleadoBloc>()
-                                        .add(DeleteEmpleadoEvent(empleado));
+                                        .add(DeleteEmpleadoEvent(empleado.id!));
                                   },
                                 ),
                               ],

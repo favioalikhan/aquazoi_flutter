@@ -3,16 +3,16 @@ import '../entity/departamento.dart';
 class DepartamentoModel extends Departamento {
   DepartamentoModel({
     required super.id,
-    required super.nombre,
+    super.nombre,
     super.descripcion,
   });
 
   // Convertir desde JSON
   factory DepartamentoModel.fromJson(Map<String, dynamic> json) {
     return DepartamentoModel(
-      id: json['id'],
-      nombre: json['nombre'],
-      descripcion: json['descripcion'],
+      id: json['id'] as int,
+      nombre: json['nombre'] as String?,
+      descripcion: json['descripcion'] as String?,
     );
   }
 

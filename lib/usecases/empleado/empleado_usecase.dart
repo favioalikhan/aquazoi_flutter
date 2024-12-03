@@ -3,37 +3,44 @@ import 'package:logger/logger.dart';
 import '../../models/data_model/empleado_model.dart';
 import '../../repositories/data/empleado/empleado_repository.dart';
 
+final Logger logger = Logger();
+
 class EmpleadoUseCase {
   final EmpleadoRepository repository;
-  final Logger logger;
 
-  EmpleadoUseCase(this.repository, {Logger? logger})
-      : logger = logger ?? Logger();
-
-  void validarEmpleado(EmpleadoModel empleado) {
-    final errores = <String>[];
-
-    // Validaciones de campos obligatorios
-    if (empleado.nombre.isEmpty) errores.add('El nombre es obligatorio');
-    if (empleado.dni.isEmpty || empleado.dni.length != 8) {
-      errores.add('DNI debe tener 8 caracteres');
-    }
-
-    // Validaciones adicionales según sea necesario
-    if (errores.isNotEmpty) {
-      throw ValidationException(errores);
-    }
-  }
+  EmpleadoUseCase(this.repository);
 
   Future<List<EmpleadoModel>> getEmpleados() async {
-    return await repository.getEmpleados();
+    return repository.getEmpleados();
   }
 
+  Future<EmpleadoModel> addEmpleado(EmpleadoModel empleado) {
+    return repository.addEmpleado(empleado);
+  }
+
+  Future<EmpleadoModel> updateEmpleado(int id, EmpleadoModel empleado) async {
+    try {
+      logger.i('Intentando actualizar empleado: ${empleado.id}');
+
+      final empleadoActualizado = await repository.updateEmpleado(id, empleado);
+
+      logger.i('Empleado actualizado exitosamente: ${empleado.id}');
+
+      return empleadoActualizado;
+    } catch (e) {
+      logger.e('Error al actualizar empleado', error: e);
+      rethrow;
+    }
+  }
+
+  Future<void> deleteEmpleado(int id) {
+    return repository.deleteEmpleado(id);
+  }
+  /*
   // Método de creación con validación y registro
   Future<EmpleadoModel> addEmpleado(EmpleadoModel empleado) async {
     try {
       // Validación previa a la creación
-      validarEmpleado(empleado);
 
       logger.i('Intentando crear empleado: ${empleado.nombre}');
 
@@ -55,16 +62,19 @@ class EmpleadoUseCase {
   }
 
   // Método de actualización con validación y registro
-  Future<EmpleadoModel> updateEmpleado(EmpleadoModel empleado) async {
+  Future<EmpleadoModel> updateEmpleado(
+      int empleadoId, EmpleadoModel empleado) async {
     try {
-      // Validación antes de actualizar
+      // Validación previa a la actualización
       validarEmpleado(empleado);
 
-      logger.i('Intentando actualizar empleado: ${empleado.id}');
+      logger.i('Intentando actualizar empleado ID: $empleadoId');
+      logger.i('Datos de actualización: ${empleado.nombre}');
 
-      final empleadoActualizado = await repository.updateEmpleado(empleado);
+      final empleadoActualizado =
+          await repository.updateEmpleado(empleadoId, empleado);
 
-      logger.i('Empleado actualizado exitosamente: ${empleado.id}');
+      logger.i('Empleado actualizado exitosamente: $empleadoId');
 
       return empleadoActualizado;
     } on ValidationException catch (ve) {
@@ -73,6 +83,9 @@ class EmpleadoUseCase {
       rethrow;
     } catch (e) {
       logger.e('Error al actualizar empleado', error: e);
+      logger.i('Datos del empleado: ${empleado.toJson()}');
+      logger.i('Rol Principal: ${empleado.rolPrincipal}');
+      logger.i('Departamento Principal: ${empleado.departamentoPrincipal}');
       rethrow;
     }
   }
@@ -103,13 +116,13 @@ class EmpleadoUseCase {
       final empleados = await repository.getEmpleados();
       return empleados
           .where((empleado) =>
-              empleado.nombre
+              empleado.nombre!
                   .toLowerCase()
                   .contains(nombreBusqueda.toLowerCase()) ||
-              empleado.apellidoPaterno
+              empleado.apellidoPaterno!
                   .toLowerCase()
                   .contains(nombreBusqueda.toLowerCase()) ||
-              empleado.apellidoMaterno
+              empleado.apellidoMaterno!
                   .toLowerCase()
                   .contains(nombreBusqueda.toLowerCase()))
           .toList();
@@ -287,4 +300,5 @@ class ValidationException implements Exception {
   String toString() {
     return 'Errores de validación: ${errors.join(', ')}';
   }
+  */
 }

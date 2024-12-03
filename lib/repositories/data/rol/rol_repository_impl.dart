@@ -9,14 +9,9 @@ class RolRepositoryImpl implements RolRepository {
   RolRepositoryImpl(this.apiClient);
 
   @override
-  Future<List<RolModel>> getRoles(RolModel rol) async {
-    if (rol.departamentoId == null) {
-      throw Exception(
-          'El departamento o su ID es requerido para obtener roles');
-    }
-
-    final response = await apiClient
-        .get(ApiEndpoints.rolesPorDepartamento(rol.departamentoId!));
+  Future<List<RolModel>> getRoles(int departamentoId) async {
+    final response =
+        await apiClient.get(ApiEndpoints.rolesPorDepartamento(departamentoId));
 
     if (response.statusCode == 200) {
       return (response.data as List)
