@@ -16,8 +16,8 @@ class ProductoModel extends Producto {
       id: json['id'],
       nombre: json['nombre'],
       descripcion: json['descripcion'],
-      precioUnitario: json['precio_Unitario'],
-      unidadMedida: json['unidad_Medida'],
+      precioUnitario: json['precio_unitario'],
+      unidadMedida: json['unidad_medida'],
       estado: json['estado'],
     );
   }
@@ -28,8 +28,8 @@ class ProductoModel extends Producto {
       'id': id,
       'nombre': nombre,
       'descripcion': descripcion,
-      'precio_Unitario': precioUnitario,
-      'unidad_Medida': unidadMedida,
+      'precio_unitario': precioUnitario,
+      'unidad_medida': unidadMedida,
       'estado': estado,
     };
   }

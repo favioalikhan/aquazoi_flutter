@@ -1,10 +1,12 @@
+import 'dart:ffi';
+
 class Producto {
   final int? id;
   final String nombre;
   final String? descripcion;
-  final int precioUnitario;
-  final int unidadMedida;
-  final int? estado;
+  final double precioUnitario;
+  final String unidadMedida;
+  final bool? estado;
 
   Producto({
     this.id,

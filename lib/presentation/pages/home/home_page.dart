@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../presentation/pages/clients/customer_module.dart';
 import '../../../presentation/pages/inventory/inventory_module.dart';
+import '../inventory/control/control_page.dart';
+import '../inventory/producto/producto_page.dart';
 import '../../../presentation/pages/sales/sales_module.dart';
 import '../../../routes/navigation.dart';
 import 'dashboard/dashboard_page.dart';
@@ -20,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const DashboardPage(), // Pantalla principal del dashboard
     const SalesModule(),
-    const InventoryModule(),
+    const ProductoPage(),
     const CustomerModule(),
     const SizedBox(), // Página vacía para el botón "Más"
   ];
